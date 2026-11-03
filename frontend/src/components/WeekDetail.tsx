@@ -1,4 +1,5 @@
 import { Link, Navigate, useParams } from "react-router-dom";
+import usePageTitle from "../hooks/usePageTitle";
 import { formatWeekRange, parseDate } from "../lib/dates";
 import { tasksPath } from "../lib/tasks";
 
@@ -6,6 +7,7 @@ const WEEK_START_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export default function WeekDetail() {
   const { weekStart: weekStartParam = "" } = useParams<{ weekStart: string }>();
+  usePageTitle("Tasks");
 
   if (!WEEK_START_RE.test(weekStartParam)) {
     return <Navigate to={tasksPath()} replace />;

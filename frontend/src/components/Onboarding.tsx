@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import usePageTitle from "../hooks/usePageTitle";
 
 type ZigzagProps = {
   className?: string;
@@ -22,6 +23,7 @@ const Zigzag = ({ className }: ZigzagProps) => (
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  usePageTitle("Welcome");
 
   return (
     <div className="flex h-screen w-full max-w-[430px] flex-col bg-white">
