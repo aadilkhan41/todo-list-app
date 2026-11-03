@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
+import usePageTitle from "../hooks/usePageTitle";
 import { currentWeekStartKey, tasksPath } from "../lib/tasks";
 
 export default function Home() {
   const navigate = useNavigate();
   const thisWeekKey = currentWeekStartKey();
+  usePageTitle("Home");
 
   return (
     <div className="flex min-h-screen w-full max-w-[430px] flex-col bg-white px-5 pb-8 pt-6">

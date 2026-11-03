@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function SearchScreen() {
+  usePageTitle("Search");
+
   return (
     <div className="flex min-h-screen w-full max-w-[430px] flex-col bg-white px-5 pb-8 pt-6">
       <Link to="/home" className="mb-4 text-xs font-medium text-brand">
