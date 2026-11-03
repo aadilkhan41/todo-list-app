@@ -1,0 +1,21 @@
+{
+    "name": "todo-list-backend",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Todo List REST API",
+    "type": "module",
+    "main": "server.js",
+    "engines": {
+      "node": ">=20"
+    },
+    "scripts": {
+      "dev": "node --watch --env-file=.env server.js",
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "cors": "^2.8.5",
+      "express": "^5.1.0",
+      "mongoose": "^8.13.2",
+      "morgan": "^1.10.0"
+    }
+  }
