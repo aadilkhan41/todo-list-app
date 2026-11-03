@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg: #fff;
+  --ink: #14142b;
+  --mute: #8e90a6;
+  --line: #ecedf3;
+  --field: #fff;
+  --sheet: #fff;
+  --tint: #eef1ff;
+  --redtint: #ffe4e4;
+  --track: #dadcfa;
+  --navy: #25389b;
+}
+
+body {
+  @apply bg-[#F2F3F7] font-sans text-sm text-ink;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid #4764e8;
+  outline-offset: 2px;
+}
+
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none;
+}

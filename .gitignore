@@ -1,17 +1,13 @@
-# dependencies
 node_modules/
 
-# env / secrets
 .env
 .env.*
 !.env.example
 
-# build / coverage
 dist/
 coverage/
 *.log
 
-# OS / editor
 .DS_Store
 .vscode/
 .idea/
