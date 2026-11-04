@@ -32,21 +32,27 @@ export default function TaskRow({ task, showDate }: TaskRowProps) {
   const [offsetX, setOffsetX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const rowRef = useRef<HTMLDivElement>(null);
+  const offsetXRef = useRef(0);
   const dragStart = useRef<DragStart | null>(null);
   const didDrag = useRef(false);
   const ignoreClick = useRef(false);
 
+  const setOffset = (value: number) => {
+    offsetXRef.current = value;
+    setOffsetX(value);
+  };
+
   useEffect(() => {
     if (offsetX === 0) return;
     const close = (event: PointerEvent) => {
-      if (rowRef.current && !rowRef.current.contains(event.target as Node)) setOffsetX(0);
+      if (rowRef.current && !rowRef.current.contains(event.target as Node)) setOffset(0);
     };
     document.addEventListener("pointerdown", close);
     return () => document.removeEventListener("pointerdown", close);
   }, [offsetX]);
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    dragStart.current = { clientX: event.clientX, clientY: event.clientY, offset: offsetX };
+    dragStart.current = { clientX: event.clientX, clientY: event.clientY, offset: offsetXRef.current };
     didDrag.current = false;
   };
 
@@ -57,11 +63,11 @@ export default function TaskRow({ task, showDate }: TaskRowProps) {
       if (!didDrag.current) event.currentTarget.setPointerCapture?.(event.pointerId);
       didDrag.current = true;
       setDragging(true);
-      setOffsetX(Math.max(-ACTION_WIDTH, Math.min(0, dragStart.current.offset + deltaX)));
+      setOffset(Math.max(-ACTION_WIDTH, Math.min(0, dragStart.current.offset + deltaX)));
     }
   };
 
-  const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const onPointerUp = () => {
     if (!dragStart.current) return;
     dragStart.current = null;
     setDragging(false);
@@ -70,16 +76,16 @@ export default function TaskRow({ task, showDate }: TaskRowProps) {
     setTimeout(() => {
       ignoreClick.current = false;
     }, 60);
-    if (offsetX < -ACTION_WIDTH / 2) {
-      if (event.pointerType === "mouse") {
-        setOffsetX(0);
-        dispatch(requestDelete(task));
-      } else setOffsetX(-ACTION_WIDTH);
-    } else setOffsetX(0);
+    if (offsetXRef.current < -ACTION_WIDTH / 2) {
+      setOffset(0);
+      dispatch(requestDelete(task));
+    } else {
+      setOffset(0);
+    }
   };
 
   const askDelete = () => {
-    setOffsetX(0);
+    setOffset(0);
     dispatch(requestDelete(task));
   };
 
