@@ -1,29 +1,60 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import usePageTitle from "../hooks/usePageTitle";
-import { currentWeekStartKey, tasksPath } from "../lib/tasks";
+import useTasks, { useTaskUi } from "../hooks/useTasks";
+import WeekCard from "./WeekCard";
+import FabButton from "./ui/FabButton";
+import PageShell from "./ui/PageShell";
+import SectionTitle from "./ui/SectionTitle";
+import { Search } from "./Icons";
+import { currentWeekStartKey, groupTasksByWeek, tasksPath, todayString } from "../lib/tasks";
 
 export default function Home() {
   const navigate = useNavigate();
-  const thisWeekKey = currentWeekStartKey();
+  const { openAdd } = useTaskUi();
+  const { tasks, loading } = useTasks();
   usePageTitle("Home");
 
+  const thisWeekKey = currentWeekStartKey();
+  const tasksByWeek = groupTasksByWeek(tasks, thisWeekKey);
+  const otherWeekKeys = Object.keys(tasksByWeek)
+    .filter((weekKey) => weekKey !== thisWeekKey)
+    .sort()
+    .reverse();
+
   return (
-    <div className="flex min-h-screen w-full max-w-[430px] flex-col bg-white px-5 pb-8 pt-6">
-      <h1 className="mb-4 text-xl font-semibold">Home</h1>
+    <PageShell>
       <button
         type="button"
         onClick={() => navigate("/search")}
-        className="mb-4 flex h-[46px] w-full items-center rounded border border-line bg-field px-3.5 text-left text-xs text-mute"
+        className="flex h-[46px] w-full items-center rounded border border-line bg-field px-3.5 text-left text-xs text-mute"
       >
-        Search for a task
+        <span className="flex-1">Search for a task</span>
+        <Search className="h-[18px] w-[18px] text-ink" />
       </button>
-      <p className="mb-2 text-sm font-medium text-mute">This Week</p>
-      <Link
-        to={tasksPath(thisWeekKey)}
-        className="rounded border border-line bg-field px-4 py-3 text-sm font-medium text-ink"
-      >
-        Open week {thisWeekKey}
-      </Link>
-    </div>
+
+      <SectionTitle>This Week</SectionTitle>
+      {loading ? (
+        <div aria-busy="true" className="mb-3 h-[118px] animate-pulse rounded border border-line bg-field" />
+      ) : (
+        <>
+          <WeekCard
+            weekKey={thisWeekKey}
+            tasks={tasksByWeek[thisWeekKey]}
+            onOpen={(weekStart) => navigate(tasksPath(weekStart))}
+          />
+          {otherWeekKeys.length > 0 && <SectionTitle>Other Weeks</SectionTitle>}
+          {otherWeekKeys.map((weekKey) => (
+            <WeekCard
+              key={weekKey}
+              weekKey={weekKey}
+              tasks={tasksByWeek[weekKey]}
+              onOpen={(weekStart) => navigate(tasksPath(weekStart))}
+            />
+          ))}
+        </>
+      )}
+
+      <FabButton onClick={() => openAdd(todayString())} />
+    </PageShell>
   );
 }
