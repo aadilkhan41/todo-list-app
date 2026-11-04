@@ -2,13 +2,17 @@ import { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 import type { TaskFormValues } from "../types/task";
-import useTasks, { TasksProvider, useTaskUi } from "../hooks/useTasks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { clearPendingDelete, closeModal } from "../store/uiSlice";
+import useTasks from "../hooks/useTasks";
 import ConfirmDialog from "./ConfirmDialog";
 import ErrorBanner from "./ErrorBanner";
 import TaskModal from "./TaskModal";
 
-function TasksShellInner() {
-  const { modal, pendingDelete, closeModal, clearPendingDelete } = useTaskUi();
+export default function TasksShell() {
+  const dispatch = useAppDispatch();
+  const modal = useAppSelector((state) => state.ui.modal);
+  const pendingDelete = useAppSelector((state) => state.ui.pendingDelete);
   const { error, loaded, reload, addTask, updateTask, removeTask } = useTasks();
   const abortRef = useRef<AbortController | null>(null);
 
@@ -26,7 +30,7 @@ function TasksShellInner() {
     const editing = modal.task;
     const ok = editing ? await updateTask(editing.id, values) : await addTask(values);
     if (ok) {
-      closeModal();
+      dispatch(closeModal());
       toast.success(editing ? "Task updated" : "Task added");
     }
     return ok;
@@ -35,7 +39,7 @@ function TasksShellInner() {
   const confirmDelete = async () => {
     if (!pendingDelete) return;
     const task = pendingDelete;
-    clearPendingDelete();
+    dispatch(clearPendingDelete());
     const ok = await removeTask(task.id);
     if (ok) toast.success("Task deleted");
   };
@@ -50,7 +54,7 @@ function TasksShellInner() {
           task={modal.task}
           date={modal.date}
           onSave={saveTask}
-          onClose={closeModal}
+          onClose={() => dispatch(closeModal())}
         />
       )}
       {pendingDelete && (
@@ -60,17 +64,9 @@ function TasksShellInner() {
           confirmLabel="Delete"
           cancelLabel="Cancel"
           onConfirm={() => void confirmDelete()}
-          onCancel={clearPendingDelete}
+          onCancel={() => dispatch(clearPendingDelete())}
         />
       )}
     </>
-  );
-}
-
-export default function TasksShell() {
-  return (
-    <TasksProvider>
-      <TasksShellInner />
-    </TasksProvider>
   );
 }

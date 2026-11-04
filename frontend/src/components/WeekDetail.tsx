@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import usePageTitle from "../hooks/usePageTitle";
-import useTasks, { useTaskUi } from "../hooks/useTasks";
+import useTasks from "../hooks/useTasks";
+import { useAppDispatch } from "../store/hooks";
+import { openAdd } from "../store/uiSlice";
 import DayStrip from "./DayStrip";
 import StatCard from "./StatCard";
 import TaskList from "./TaskList";
@@ -29,7 +31,7 @@ const WEEK_START_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export default function WeekDetail() {
   const navigate = useNavigate();
-  const { openAdd } = useTaskUi();
+  const dispatch = useAppDispatch();
   const { weekStart: weekStartParam = "" } = useParams<{ weekStart: string }>();
   const { tasks } = useTasks();
   usePageTitle("Tasks");
@@ -130,7 +132,7 @@ export default function WeekDetail() {
         emptyHint={`Tap + to add a task for this ${showAllDays ? "week" : "day"}.`}
       />
 
-      <FabButton onClick={() => openAdd(showAllDays ? weekStart : selectedDay)} />
+      <FabButton onClick={() => dispatch(openAdd(showAllDays ? weekStart : selectedDay))} />
     </PageShell>
   );
 }

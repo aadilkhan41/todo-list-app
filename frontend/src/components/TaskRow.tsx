@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import type { Priority, Task } from "../types/task";
-import useTasks, { useTaskUi } from "../hooks/useTasks";
+import useTasks from "../hooks/useTasks";
+import { useAppDispatch } from "../store/hooks";
+import { openEdit, requestDelete } from "../store/uiSlice";
 import { Check, Edit, Trash } from "./Icons";
 import IconButton from "./ui/IconButton";
 import { MONTHS, formatTime, parseDate } from "../lib/dates";
@@ -25,7 +27,7 @@ type TaskRowProps = {
 };
 
 export default function TaskRow({ task, showDate }: TaskRowProps) {
-  const { openEdit, requestDelete } = useTaskUi();
+  const dispatch = useAppDispatch();
   const { toggleTask } = useTasks();
   const [offsetX, setOffsetX] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -71,14 +73,14 @@ export default function TaskRow({ task, showDate }: TaskRowProps) {
     if (offsetX < -ACTION_WIDTH / 2) {
       if (event.pointerType === "mouse") {
         setOffsetX(0);
-        requestDelete(task);
+        dispatch(requestDelete(task));
       } else setOffsetX(-ACTION_WIDTH);
     } else setOffsetX(0);
   };
 
   const askDelete = () => {
     setOffsetX(0);
-    requestDelete(task);
+    dispatch(requestDelete(task));
   };
 
   const afterDrag = (action: () => void) => () => {
@@ -139,7 +141,7 @@ export default function TaskRow({ task, showDate }: TaskRowProps) {
           <Trash className="h-5 w-5" />
         </IconButton>
         <IconButton
-          onClick={afterDrag(() => openEdit(task))}
+          onClick={afterDrag(() => dispatch(openEdit(task)))}
           aria-label="Edit task"
           className="text-[#B4B6C8] hover:text-brand"
         >
