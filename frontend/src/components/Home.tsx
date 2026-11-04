@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import usePageTitle from "../hooks/usePageTitle";
-import useTasks, { useTaskUi } from "../hooks/useTasks";
+import useTasks from "../hooks/useTasks";
+import { useAppDispatch } from "../store/hooks";
+import { openAdd } from "../store/uiSlice";
 import WeekCard from "./WeekCard";
 import FabButton from "./ui/FabButton";
 import PageShell from "./ui/PageShell";
@@ -10,7 +12,7 @@ import { currentWeekStartKey, groupTasksByWeek, tasksPath, todayString } from ".
 
 export default function Home() {
   const navigate = useNavigate();
-  const { openAdd } = useTaskUi();
+  const dispatch = useAppDispatch();
   const { tasks, loading } = useTasks();
   usePageTitle("Home");
 
@@ -54,7 +56,7 @@ export default function Home() {
         </>
       )}
 
-      <FabButton onClick={() => openAdd(todayString())} />
+      <FabButton onClick={() => dispatch(openAdd(todayString()))} />
     </PageShell>
   );
 }
